@@ -1,8 +1,20 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  let isLoggedIn = false;
+
+  const handleLogOut = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) isLoggedIn = true;
+  }, []);
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -34,12 +46,16 @@ export default function Navbar() {
                 </Link>
               </li>
             </ul>
-            <form className="d-flex">
-              <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-              <button className="btn btn-outline-success" type="submit">
-                Search
+            {!isLoggedIn && (
+              <Link className="btn btn-primary" to="/login">
+                Login/Sign Up
+              </Link>
+            )}
+            {isLoggedIn && (
+              <button className="btn btn-primary" onClick={handleLogOut}>
+                Log Out
               </button>
-            </form>
+            )}
           </div>
         </div>
       </nav>

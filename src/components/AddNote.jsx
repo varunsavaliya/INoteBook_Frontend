@@ -16,8 +16,13 @@ export default function AddNote() {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    if (!note.title || note.description.length < 10) return;
     id ? editNote(id, note) : addNote(note);
     navigate("/");
+  };
+
+  const isBtnDisabled = () => {
+    return !note.title || note.description.length < 10;
   };
 
   const fetchData = async () => {
@@ -59,7 +64,7 @@ export default function AddNote() {
   return (
     <>
       <div className="d-flex my-3 justify-content-start align-items-center">
-        <i role="button" class="fa-solid fa-left-long me-3" onClick={handleBackClick}></i>
+        <i role="button" className="fa-solid fa-left-long me-3" onClick={handleBackClick}></i>
         <h3 className="my-3">{id ? "Edit Note" : "Add Note"}</h3>
       </div>
       <form>
@@ -81,7 +86,7 @@ export default function AddNote() {
           </label>
           <input type="text" className="form-control" id="tag" name="tag" aria-describedby="tag" value={note.tag} onChange={onChange} />
         </div>
-        <button className="btn btn-primary" onClick={onSubmit}>
+        <button disabled={isBtnDisabled()} className="btn btn-primary" onClick={onSubmit}>
           {id ? "Edit Note" : "Add Note"}
         </button>
       </form>
