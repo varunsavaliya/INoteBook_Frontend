@@ -61,7 +61,7 @@ const NoteState = (props) => {
     });
     await response.json().then((res) => {
       if (res.data) {
-        getAllNotes();
+        // getAllNotes();
       }
     });
   };

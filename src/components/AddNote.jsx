@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import NoteContext from "../contexts/notes/NoteContext";
+import LoginContext from "../contexts/auth/LoginContext.js";
 
 export default function AddNote() {
   const URL = "http://localhost:5000/api";
   const { editNote, addNote } = useContext(NoteContext);
   const { id } = useParams();
   const navigate = useNavigate();
+  const { getToken } = useContext(LoginContext);
 
   const [note, setNote] = useState({ title: "", description: "", tag: "" });
 
@@ -31,7 +33,7 @@ export default function AddNote() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YTM3MzI5ZTU1MmE2Mzg2ZjIzYTQ3OSIsImlhdCI6MTcwNTIxMDY2NX0.-YurjyGqtNV6CZVVvLh9n0-Direv_n9C5ycum1rfhSU", // Replace with your actual token
+          token: getToken(),
         },
       });
 
