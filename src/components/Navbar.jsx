@@ -1,19 +1,25 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import LoginContext from "../contexts/auth/LoginContext.js";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  let isLoggedIn = false;
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
   const handleLogOut = () => {
     localStorage.removeItem("token");
+    setIsLoggedIn(false);
     navigate("/login");
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) isLoggedIn = true;
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
   }, []);
   return (
     <>

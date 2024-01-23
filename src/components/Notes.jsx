@@ -1,13 +1,15 @@
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
+import LoginContext from "../contexts/auth/LoginContext";
 import NoteContext from "../contexts/notes/NoteContext";
 import NoteItem from "./NoteItem";
 
 export default function Notes() {
   const { notes, getAllNotes } = useContext(NoteContext);
+  const { isLoggedIn } = useContext(LoginContext);
 
   useEffect(() => {
-    getAllNotes();
+    isLoggedIn && getAllNotes();
   }, []);
 
   return (

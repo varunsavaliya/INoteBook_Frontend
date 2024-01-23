@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import LoginContext from "../../contexts/auth/LoginContext.js";
 
 export default function SignUp() {
   const URL = "http://localhost:5000/api";
   const [credentials, setCredentials] = useState({ name: "", email: "", password: "" });
   const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
 
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -21,16 +23,22 @@ export default function SignUp() {
     });
 
     const json = await response.json();
-    if (json.token) {
-      localStorage.setItem("token", json.token);
+    if (json.success) {
+      localStorage.setItem("token", json.data.token);
+      setIsLoggedIn(true);
       navigate("/");
     }
   };
+
+  useEffect(() => {
+    isLoggedIn && navigate("/");
+  }, []);
   return (
     <>
       <div className="container my-3">
+        <h4>Create account to use iNotebook</h4>
         <form onSubmit={handleSignUp}>
-          <div className="mb-3">
+          <div className="my-3">
             <label htmlFor="name" className="form-label">
               Name
             </label>
@@ -49,7 +57,7 @@ export default function SignUp() {
             <label htmlFor="password" className="form-label">
               Password
             </label>
-            <input type="password" className="form-control" id="password" name="password" value={credentials.password} onChange={onChange} />
+            <input type="password" className="form-control" id="password" name="password" value={credentials.password} onChange={onChange} autoComplete="on" />
           </div>
           <div className="form-text my-3">
             Already have an account? <Link to="/login"> Login here</Link>
