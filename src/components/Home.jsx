@@ -1,10 +1,10 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import LoginContext from "../contexts/auth/LoginContext.js";
 import Notes from "./Notes";
 
 export default function Home() {
-  const { isLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {

@@ -1,11 +1,15 @@
+import { bindActionCreators } from "@reduxjs/toolkit";
 import { useContext, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setAllNotes } from "../../redux/slices/NoteSlice.js";
 import LoginContext from "../auth/LoginContext.js";
 import NoteContext from "./NoteContext";
 
 const NoteState = (props) => {
-  const URL = "http://localhost:5000/api";
-  const [notes, setNotes] = useState([]);
+  const URL = import.meta.env.VITE_REACT_APP_API_URL;
   const { getToken } = useContext(LoginContext);
+  const dispatch = useDispatch();
+  const actions = bindActionCreators({ setAllNotes }, dispatch);
 
   const getAllNotes = async () => {
     const response = await fetch(`${URL}/note/fetchallnotes`, {
@@ -16,7 +20,9 @@ const NoteState = (props) => {
       },
     });
     const json = await response.json();
-    setNotes(json.data);
+    if (json.success) {
+      actions.setAllNotes(json.data);
+    }
   };
 
   const addNote = async (note) => {
@@ -66,7 +72,28 @@ const NoteState = (props) => {
     });
   };
 
-  return <NoteContext.Provider value={{ notes, addNote, deleteNote, getAllNotes, editNote }}>{props.children}</NoteContext.Provider>;
+  const getNoteById = async (id) => {
+    try {
+      const response = await fetch(`${URL}/note/getnotebyid/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: getToken(),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch data");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+      return;
+    }
+  };
+
+  return <NoteContext.Provider value={{ addNote, deleteNote, getAllNotes, editNote, getNoteById }}>{props.children}</NoteContext.Provider>;
 };
 
 export default NoteState;

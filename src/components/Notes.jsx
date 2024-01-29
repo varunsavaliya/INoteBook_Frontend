@@ -1,16 +1,17 @@
 import { useContext, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import LoginContext from "../contexts/auth/LoginContext";
 import NoteContext from "../contexts/notes/NoteContext";
 import NoteItem from "./NoteItem";
 
 export default function Notes() {
-  const { notes, getAllNotes } = useContext(NoteContext);
-  const { isLoggedIn } = useContext(LoginContext);
+  const { notes } = useSelector((state) => state.note);
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { getAllNotes } = useContext(NoteContext);
 
   useEffect(() => {
     isLoggedIn && getAllNotes();
-  }, []);
+  }, [notes]);
 
   return (
     <>
@@ -21,9 +22,11 @@ export default function Notes() {
         </Link>
       </div>
       <div className="row my-3">
-        {notes.map((note) => {
-          return <NoteItem note={note} key={note._id} />;
-        })}
+        {!notes.length && <div>No notes to show</div>}
+        {notes.length &&
+          notes.map((note) => {
+            return <NoteItem note={note} key={note._id} />;
+          })}
       </div>
     </>
   );

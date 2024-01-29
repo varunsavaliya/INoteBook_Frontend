@@ -1,26 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
+import { bindActionCreators } from "@reduxjs/toolkit";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import LoginContext from "../contexts/auth/LoginContext.js";
+import { logout } from "../redux/slices/AuthSlice.js";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const actions = bindActionCreators({ logout }, dispatch);
 
   const handleLogOut = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
+    actions.logout();
     navigate("/login");
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, []);
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">

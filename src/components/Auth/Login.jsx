@@ -1,12 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import LoginContext from "../../contexts/auth/LoginContext.js";
 
 export default function Login() {
-  const URL = "http://localhost:5000/api";
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const navigate = useNavigate();
-  const { isLoggedIn, setIsLoggedIn } = useContext(LoginContext);
+  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { tryLogin } = useContext(LoginContext);
 
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -14,26 +15,12 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    const response = await fetch(`${URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email: credentials.email, password: credentials.password }),
-    });
-
-    const json = await response.json();
-    if (json.success) {
-      localStorage.setItem("token", json.data.token);
-      setIsLoggedIn(true);
-      navigate("/");
-    }
+    tryLogin(credentials);
   };
 
   useEffect(() => {
-    console.log(isLoggedIn);
     isLoggedIn && navigate("/");
-  }, []);
+  }, [isLoggedIn]);
   return (
     <>
       <div className="container my-3">

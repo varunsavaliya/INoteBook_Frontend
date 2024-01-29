@@ -1,14 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import NoteContext from "../contexts/notes/NoteContext";
 import LoginContext from "../contexts/auth/LoginContext.js";
+import NoteContext from "../contexts/notes/NoteContext";
 
 export default function AddNote() {
-  const URL = "http://localhost:5000/api";
-  const { editNote, addNote } = useContext(NoteContext);
+  const { editNote, addNote, getNoteById } = useContext(NoteContext);
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getToken } = useContext(LoginContext);
 
   const [note, setNote] = useState({ title: "", description: "", tag: "" });
 
@@ -28,29 +26,14 @@ export default function AddNote() {
   };
 
   const fetchData = async () => {
-    try {
-      const response = await fetch(`${URL}/note/getnotebyid/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: getToken(),
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
-      }
-
-      const data = await response.json();
-      const note = {
-        title: data.data.title,
-        description: data.data.description,
-        tag: data.data.tag,
+    getNoteById(id).then((res) => {
+      const fetchedNote = {
+        title: res.data.title,
+        description: res.data.description,
+        tag: res.data.tag,
       };
-      setNote(note);
-    } catch (error) {
-      console.error("Error fetching data:", error.message);
-    }
+      setNote(fetchedNote);
+    });
   };
 
   const handleBackClick = () => {
